@@ -45,14 +45,14 @@ embedding_bias=tf.nn.embedding_lookup(bias,labels)
 output=tf.reduce_sum(tf.einsum("xz,xyz->xyz",embedding_batch,embedding_weight),2)+embedding_bias
 
 reverse_labels_mark=1-labels_mark
-#NCE_LOSS=tf.reduce_sum(-tf.einsum("xy,xy->xy",output,labels_mark)+tf.log(1+tf.exp(output)))
+
 NCE_LOSS=tf.reduce_sum(labels_mark*tf.log(1+tf.exp(-output))+reverse_labels_mark*tf.log(1+tf.exp(output)))
 train_step = tf.train.GradientDescentOptimizer(learnning_rate).minimize(NCE_LOSS)
 
 #----------Normalized final emmbeddings-----------------
 norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keep_dims=True))
 normalized_embeddings = embeddings / norm
-valid_examples = np.arange(0,show_word_num,1)
+valid_examples = np.random.choice(100,show_word_num,replace=False)
 valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
 valid_embeddings = tf.nn.embedding_lookup(
     normalized_embeddings, valid_dataset)
