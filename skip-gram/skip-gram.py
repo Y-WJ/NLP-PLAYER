@@ -13,11 +13,11 @@ loadfile="2.txt"                                    #文件
 dim=100                                             #词向量的维数
 vocabulary_size=50000                               #词向量的个数
 batch_size=64                                       #一批样本的词数
-sample_num=120                                       #每个样本词对应标记的个数(这包括了正标记和负采样得到的负标记)
-sample_widnow=10000                                  #负采样的范围，只从前sample_window个词向量中负采样
+sample_num=64                                       #每个样本词对应标记的个数(这包括了正标记和负采样得到的负标记)
+sample_window=50000                                  #负采样的范围，只从前sample_window个词向量中负采样
 context_window=6                                    #考虑前后context_window个词作为正标记的采样区
-train_step_num=100000                               #训练轮数
-check_point=1000                                    #训练打印点
+train_step_num=1000000                               #训练轮数
+check_point=2000                                    #训练打印点
 learnning_rate=0.01                                 #学习率
 show_word_num=16                                    #打印前show_word_num个词
 related_word_num=16                                 #打印的最近相关词数
@@ -26,7 +26,8 @@ b_s=batch_size*sample_num                           #每个batch的标记矩阵�
 #----------build dictionary------------------------
 a=dic.readfile(loadfile)
 dictionary,reverse_dictionary,count,word_number=dic.init_dictionary(a,vocabulary_size)
-
+#sample_probabilities=dic.sample_probability(count[0:sample_window])
+sample_probabilities=None
 #--------build graph-------------------------------
 sess = tf.InteractiveSession()
 
@@ -44,9 +45,10 @@ embedding_bias=tf.nn.embedding_lookup(bias,labels)
 
 output=tf.reduce_sum(tf.einsum("xz,xyz->xyz",embedding_batch,embedding_weight),2)+embedding_bias
 
-reverse_labels_mark=1-labels_mark
+#reverse_labels_mark=1-labels_mark
 
-NCE_LOSS=tf.reduce_sum(labels_mark*tf.log(1+tf.exp(-output))+reverse_labels_mark*tf.log(1+tf.exp(output)))
+#NCE_LOSS=tf.reduce_sum(labels_mark*tf.log(1+tf.exp(-output))+reverse_labels_mark*tf.log(1+tf.exp(output)))
+NCE_LOSS=tf.reduce_sum(tf.maximum(output,0)-output*labels_mark+tf.log(1+tf.exp(-tf.abs(output))))
 train_step = tf.train.GradientDescentOptimizer(learnning_rate).minimize(NCE_LOSS)
 
 #----------Normalized final emmbeddings-----------------
@@ -74,7 +76,9 @@ for i in range(1,train_step_num+1):
                                                                    batch_size,
                                                                    pin,
                                                                    context_window,
-                                                                   sample_num)
+                                                                   sample_num,
+                                                                   sample_window,
+                                                                   sample_probabilities)
     if pre_pin>pin:
         period+=1
     feed_dict={batch:batch_feed,labels:labels_feed,labels_mark:labels_mark_feed}
