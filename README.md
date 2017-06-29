@@ -1,4 +1,4 @@
 # NLP-PLAYER
 some algorithm implemention and reference doc,
 
-mainly by python based on tensorflow
+mainly in python based on tensorflow
