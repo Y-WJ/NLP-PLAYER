@@ -60,10 +60,13 @@ def generate_list(matrix_size,word_number,context_window):
             print("processing",i*100/length,"%")
     print("Statistic Finished!!!")
     print("Generating List!!!")
+    length_list=float(len(list_X))
+    count=0.
     for term in list_X:
         term[2]=X[term[0],term[1]]
-
-    print("lenght=",len(list_X))
+        count+=term[2]
+    print("lenght=",length_list)
+    print("Average X_ij=",count/length_list)
     return np.array(list_X)
 
 def generate_batch(list_X,batch_size):

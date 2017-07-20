@@ -13,12 +13,12 @@ loadfile="2.txt"                                    #文件
 dim=100                                             #词向量的维数
 matrix_size=50000                                   #词向量的个数
 context_window=6                                    #上下文窗口
-batch_size=1000                                      #批次大小
+batch_size=5000                                     #批次大小
 x_max=100.0
 a=0.75                                              #两个超参
 show_word_num=10                                    #展示单词数量
 related_word_num=10                                 #近义词数量
-train_step_num=100000                               #训练轮数
+train_step_num=1000000                              #训练轮数
 check_point=1000                                    #训练打印点
 learnning_rate=0.01                                 #学习率
 
