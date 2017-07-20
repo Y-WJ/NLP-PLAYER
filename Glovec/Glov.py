@@ -7,6 +7,7 @@ Created on Tue Jul 18 20:13:39 2017
 import tensorflow as tf
 import Global_statistic as Gs
 import numpy as np
+
 #----------set parament---------------------------
 loadfile="2.txt"                                    #文件
 dim=100                                             #词向量的维数
@@ -17,7 +18,7 @@ x_max=100.0
 a=0.75                                              #两个超参
 show_word_num=10                                    #展示单词数量
 related_word_num=10                                 #近义词数量
-train_step_num=1000000                               #训练轮数
+train_step_num=100000                               #训练轮数
 check_point=1000                                    #训练打印点
 learnning_rate=0.01                                 #学习率
 
@@ -46,6 +47,7 @@ b_j=tf.nn.embedding_lookup(bias_j,word_j)
 f_ij=tf.minimum(1.0,tf.pow(X_ij/x_max,a))
 
 wiwj=tf.reduce_sum(tf.einsum("xy,xy->xy",w_i,w_j),1)
+
 LOSS=tf.reduce_sum(f_ij*tf.abs((wiwj+b_i+b_j-tf.log(X_ij))))
 #LOSS=tf.reduce_sum(f_ij*tf.pow((wiwj+b_i+b_j-tf.log(X_ij)),2))
 
@@ -71,6 +73,8 @@ for i in range(1,train_step_num+1):
     feed_dict={word_i:word_i_feed,word_j:word_j_feed,X_ij:X_ij_feed}
     _,current_loss=sess.run([train_step,LOSS],feed_dict=feed_dict)
     average_loss+=current_loss
+    if i==1:
+        print("LOSS after initialized",current_loss/batch_size)
     if i%check_point==0:
                 print("Training processing ",
                       i*100/train_step_num,
@@ -83,29 +87,13 @@ final_embeddings=normalized_embeddings.eval()
 
 
 #---------plot imagine and save word_vector as np_file-----------
-def plot_with_labels(low_dim_embs, labels, filename='111tsne.png'):
-    assert low_dim_embs.shape[0] >= len(labels), "More labels than embeddings"
-    plt.figure(figsize=(18, 18))
-    for i, label in enumerate(labels):
-        x, y = low_dim_embs[i,:]
-        plt.scatter(x, y)
-        plt.annotate(label,
-                     xy=(x, y),
-                     xytext=(5, 2),
-                     textcoords='offset points',
-                     ha='right',
-                     va='bottom')
-    plt.savefig(filename)
-
 try:
     from sklearn.manifold import TSNE
-    import matplotlib.pyplot as plt
-
     tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
     plot_only = 500
     low_dim_embs = tsne.fit_transform(final_embeddings[:plot_only,:])
     word = [reverse_dictionary[i] for i in range(plot_only)]
-    plot_with_labels(low_dim_embs, word)
+    Gs.plot_with_labels(low_dim_embs, word)
 
 except ImportError:
     print("Please install sklearn and matplotlib to visualize embeddings.")

@@ -7,7 +7,7 @@ Created on Tue Jul 18 20:05:46 2017
 import numpy as np
 import os
 import collections
-import random
+import matplotlib.pyplot as plt
 
 def readfile(file):
     if not os.path.exists(file):
@@ -56,8 +56,8 @@ def generate_list(matrix_size,word_number,context_window):
             X[word_number[i],word_number[j]]+=1
             X[word_number[j],word_number[i]]+=1
         i+=1
-        if i%10000==0:
-            print("process",i*100/length,"%")
+        if i%100000==0:
+            print("processing",i*100/length,"%")
     print("Statistic Finished!!!")
     print("Generating List!!!")
     for term in list_X:
@@ -69,18 +69,24 @@ def generate_list(matrix_size,word_number,context_window):
 def generate_batch(list_X,batch_size):
     choice=np.random.choice(len(list_X),batch_size)
     batch=list_X[choice,:]
-#    if pin+batch_size>length:
-#        pin=0
-#    batch=list_X[pin:pin+batch_size,:]
-#    pin+=batch_size
-#    else:
-#        batch=np.row_stack((list_X[pin:length,:],list_X[0:batch_size+pin-length,:]))
-#        pin=batch_size+pin-length
     word_i=batch[:,0]
     word_j=batch[:,1]
     X_ij=batch[:,2]
     return word_i,word_j,X_ij
 
+def plot_with_labels(low_dim_embs, labels, filename='111tsne.png'):
+    assert low_dim_embs.shape[0] >= len(labels), "More labels than embeddings"
+    plt.figure(figsize=(18, 18))
+    for i, label in enumerate(labels):
+        x, y = low_dim_embs[i,:]
+        plt.scatter(x, y)
+        plt.annotate(label,
+                     xy=(x, y),
+                     xytext=(5, 2),
+                     textcoords='offset points',
+                     ha='right',
+                     va='bottom')
+    plt.savefig(filename)
 
 
 
