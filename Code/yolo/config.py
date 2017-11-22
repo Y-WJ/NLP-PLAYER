@@ -36,7 +36,6 @@ class Parameter():
     USING_GPU=False                                 #使用GPU训练
     CPU_PROCESSING=3                                #cpu进程数，在USING_GPU=0时有效
     UPDATE_MODEL=True                               #训练或者推断，后者不更新模型
-    FLIPPED=False
     REBUILD=False                                   #更新训练数据缓存
     USING_PRETRAINED_WEIGHT=True
     PRETRAINED_WEIGHT_FILE='weight.pkl'
