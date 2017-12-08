@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Created on Sun Oct  8 14:31:59 2017
 
@@ -58,13 +58,3 @@ for i in t:
 print("FINISHED!!!")
 torch.save(parsing,"parsing.pkl")
 
-'''
-parser=torch.load("parsing.pkl")
-parser.stack_lstm.batch_size=1
-parser.buffer_lstm.batch_size=1
-parser.tran_lstm.batch_size=1
-sen="THE DAILY STAR publishes this commentary ."
-tran=conll.parser(sen,parser,wv)
-parsing_item=conll.get_parsing_item(tran,sen)
-conll.write_to_conll("111.conllu",parsing_item)
-'''
