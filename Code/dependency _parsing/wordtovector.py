@@ -74,7 +74,7 @@ class embedding():
         average_loss=0.
         current_loss=0.
         period=0
-        self.t=tqdm.tqdmt=tqdm.tqdm(range(train_step_num),desc="Training",ncols=130,ascii=True,unit="Batch")
+        self.t=tqdm.tqdm(range(train_step_num),desc="Training",ncols=130,ascii=True,unit="Batch")
         info={'INIT_LOSS':0.,'LOSS':0.,'period':0.}
         for i in self.t:
             pre_pin=pin
